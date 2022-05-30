@@ -1,0 +1,6 @@
+git 代码托管
+jenkins 构建
+docker k8s 发布
+
+
+开发人员发布代码到git->jenkins服务器拉代码到jenkins服务器->maven打包->推送到生产环境tomcat/k8s

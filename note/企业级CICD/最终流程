@@ -1,0 +1,13 @@
+git代码管理
+jenkins构建 pull git  使用maven进行编译打包
+打包生成的代码 生成一个新的镜像版本 push到本地docker仓库
+发布 机器pull新版本镜像 并删除原来的容器 运行新版本镜像
+
+
+
+
+项目环境
+gitlab git +gitlab
+CI/CD jenkins+docker+mavem+git
+容器镜像仓库 harbor
+应用服务器 docker

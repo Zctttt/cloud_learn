@@ -1,0 +1,97 @@
+jenkins必备软件   JDK maven git
+
+
+安装JDK1.8
+yum install java-1.8.0-openjdk  java-1.8.0-openjdk-devel -y
+
+下载jenkins rpm包安装
+rpm -ivh jenkins-2.190.3-1.1.noarch.rpm
+
+修改jenkins配置
+vi /etc/sysconfig/jenkins
+
+JENKINS_USER="root"
+JENKINS_PORT="8888"
+
+
+选择插件安装 修改源地址
+管理-》插件管理-》可用 更新插件库
+cd /var/lib/jenkins
+sed -i 's#http://updates.jenkins-ci.org/download#https://mirrors.tuna.tsinghua.edu.cn/jenkins#g' default.json && sed -i 's#http://www.google.com#https://www.baidu.com#g' default.json
+重启
+
+
+user权限：不想看
+    安装role-based authorization strategy插件
+    configureSecurity 全局安全策略
+    创建角色
+
+
+凭证管理：！
+    1 安装插件 credentisld bindings
+    2 jenkins安装git
+    3 凭证管理创建凭证
+    4 项目-》git选择 git—url和凭证
+
+jenkins 公钥私钥
+    1 gitlab 服务器运行    ssh-keygen -t rsa 生成公钥和私钥
+        /root/.ssh 下
+        -rw------- 1 root root 1675 11月  3 00:53 id_rsa
+        -rw-r--r-- 1 root root  394 11月  3 00:53 id_rsa.pub
+        -rw-r--r-- 1 root root  177 10月 12 23:19 known_hosts
+    2 root用户-》设置-》SSH密码 添加公钥信息
+    3 jenkins-》凭证管理
+    4 项目-》git选择 git—url和凭证
+
+安装maven 安装在opt
+    1 上传 apache-maven-3.6.2-bin.tar.gz
+    2 tar -xzf apache-maven-3.6.2-bin.tar.gz
+    3 vi /etc/profile
+        export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+
+        export MAVEN_HOME=/opt/maven
+        export PATH=$PATH:$JAVA_HOME/bin:$MAVEN_HOME/bin
+    source /etc/profile
+    4 mvn -v 查看maven版本
+    5 设置-》全局工具配置
+           录入 jdk maven
+    6 系统配置
+        全局-》环境变量->新增
+                JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk
+                M2_HOME=/opt/maven
+                PATH+EXTRA=$M2_HOME/bin
+
+本地仓库
+    mkdir /root/repo 本地仓库文件
+    vi /opt/maven/conf/seetings.xml
+        <localRepository>/path/to/local/repo</localRepository>-><localRepository>/root/repo</localRepository>
+
+        <mirror>
+              <id>alimaven</id>
+              <name>aliyun maven</name>
+              <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+              <mirrorOf>central</mirrorOf>
+        </mirror>
+    验证
+
+运行服务器安装tomcat 安装在opt
+    1 上传 apache-tomcat-8.5.47.tar.gz
+    2 tar -xzf apache-tomcat-8.5.47.tar.gz
+    3 tomcat添加权限
+        cd /opt/tomcat/conf
+        vi tomcat-usr.xml
+            <tomcat-users>
+                <role rolename="tomcat"/>
+                <role rolename="role1"/>
+                <role rolename="manager-script"/>
+                <role rolename="manager-gui"/>
+                <role rolename="manager-status"/>
+                <role rolename="admin-gui"/>
+                <role rolename="admin-script"/>
+                <user username="tomcat" password="tomcat" roles="manager-gui,manager- script,tomcat,admin-gui,admin-script"/>
+            </tomcat-users>
+    4 开启远程访问
+        cd /opt/tomcat/webapps/manager/META-INF
+        vi context.xml
+        注释 <!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->
+    5 登陆  点击manage webapp 账户密码都是tomcat

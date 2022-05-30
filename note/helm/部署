@@ -1,0 +1,19 @@
+相当于k8s的yum工具 包管理器
+
+helm拥有一个命令行工具 用于本地开发及管理chart
+
+chart helm的打包格式
+repoistory helm的仓库
+
+
+
+添加仓库
+helm repo add stable http://mirror.azure.cn/kubernetes/charts
+更新
+helm repo update
+查看列表
+helm repo list
+NAME            URL
+ingress-nginx   https://kubernetes.github.io/ingress-nginx
+nginx-stable    https://helm.nginx.com/stable
+stable          http://mirror.azure.cn/kubernetes/charts

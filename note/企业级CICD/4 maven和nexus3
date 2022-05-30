@@ -1,0 +1,15 @@
+maven  项目管理工具
+nexus3 本地私服
+
+
+yum install maven
+nexus  直接下载tar.gz 运行bin/nexus start
+说的是啥我也听不懂 就记一下怎么用吧
+
+使用
+    1 点击设置图标->repository->create repostiy
+    2 选择什么类型的仓库（上传包类型 仓库类型）选择maven2（hosted）并起一个名字
+    3 hosted 下时disable redploy改为allow redeploy
+    4 点击 maven-public 选择你创建的仓库 添加进组
+    5 创建一个用户 user->create user
+    6 upload 上传文件

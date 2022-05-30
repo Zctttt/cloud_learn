@@ -1,0 +1,5 @@
+sudo docker run -d --privileged --restart=unless-stopped -p 8080:80 -p 8443:443 -v /home/zct/rancher:/var/lib/rancher/ rancher/rancher:stable
+
+kubectl create clusterrolebinding cluster-admin-binding --clusterrole cluster-admin --user kubernetes-admin
+
+curl --insecure -sfL https://192.168.0.106:8443/v3/import/?????.yaml | kubectl apply -f -

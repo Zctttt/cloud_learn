@@ -1,0 +1,36 @@
+#安装技术依赖
+sudo yum install -y curl policycoreutils-python openssh-server
+
+#启动ssh服务&设置为开机启动
+sudo systemctl enable sshd
+sudo systemctl start sshd
+
+#安装postfix
+sudo yum install -y postfix
+
+#启动postfix并设置为开机启动
+sudo systemctl enable postfix
+sudo systemctl start postfix
+
+
+#开放ssh、http服务
+sudo firewall-cmd --add-service=ssh --permanent
+sudo firewall-cmd --add-service=http --permanent
+
+#重载防火墙规则
+sudo firewall-cmd --reload
+
+
+下载rpm包
+wget https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/yum/el6/gitlab-ce-12.4.2-ce.0.el6.x86_64.rpm
+
+rpm安装
+rpm -ivh gitlab-ce-12.4.2-ce.0.el6.x86_64.rpm
+
+修改 /etc/gitlab/gitlab.rb
+external_url 'http://192.168.128.134:82'
+nginx['listen_port']=82
+
+重载配置
+gitlab-ctl reconfigure
+gitlab-ctl restart

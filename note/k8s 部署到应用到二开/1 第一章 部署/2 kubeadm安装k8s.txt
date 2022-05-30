@@ -1,0 +1,50 @@
+kubeadm
+
+主要有三个：Kubeadm init、kubeadm join、kubeadm token
+ kubeadm init：集群的快速初始化，部署Master节点的各个组件
+ kubeadm join 节点加入到指定集群中
+ kubeadm token   管理用于加入集群时使用的认证令牌 (如list，create)
+ kubeadm reset  重置集群，如删除 构建文件以回到初始状态
+
+
+每台机器上都要执行：
+    systemctl enable docker.service
+
+使用systemd作为docker的cgroup driver
+    sudo vi  /etc/docker/daemon.json   （没有则创建）
+加入
+    {
+      "registry-mirrors": ["https://0a6b87ac200025770fdec00b87313bc0.mirror.swr.myhuaweicloud.com"],
+    "exec-opts": ["native.cgroupdriver=systemd"]
+    }
+
+重启docker
+    systemctl daemon-reload  && systemctl restart docker
+    确保执行这句命令docker info |grep Cgroup
+    出来的值是 systemd
+
+关闭swap
+    swapoff   -a   暂时关闭SWAP，重启后恢复
+
+关于token
+    sudo kubeadm token list  可以查看token 列表
+    重新生成token (默认24小时有效期)
+    sudo kubeadm token create  --print-join-command
+
+设置ipv6
+    sudo sysctl net.bridge.bridge-nf-call-iptables=1
+
+安装flannel插件
+    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+        问题 k8s初始化没有划分网段
+            sudo vi /etc/kubernetes/manifests/kube-controller-manager.yaml
+            在command节点 加入
+            - --allocate-node-cidrs=true
+            - --cluster-cidr=10.244.0.0/16
+        重启kubelet
+            systemctl restart kubelet
+
+
+
+
+

@@ -1,0 +1,118 @@
+为什么要用docker
+    将传统分层服务架构转换为微服务
+
+    微服务特点：
+        高内聚/低耦合
+        启动速度快
+        根据业务特性，决定如何部署
+        组织架构配合微服务
+
+
+    微服务改造：
+        建议：
+            可以分离的业务逻辑
+            寻找天生隔离的代码模块，可以借助代码分析工具
+            不同并发规模，不同内存需求分离
+        可微服务的组件：
+            用户和账户管理
+            授权和会话管理
+            系统配置
+            通讯和通讯服务
+            照片 多媒体 元数据
+
+    微服务通讯:
+        点对点：（散列，去中心化，星型图）
+            多用于内部多组件之间通讯
+            有大量的重复模块入认证授权
+            缺少统一规范，如监控，审计等功能
+            后期维护成本高，服务和服务的依赖关系错综复杂难以理解
+        API网关：
+            基于一个轻量的 message gateway
+            新的API通过注册到Gateway
+            整合conmmon function
+
+
+docker是什么：
+    基于linux的 Cgroup Namespace 以及 Union FS 等技术，对进程进行封装，属于操作系统级别的虚拟化技术。
+    由于隔离的进程独立于宿主和其他的隔离的进程，因此也称为容器。
+    docker在容器之上，进行了进一步的封装，从文件系统，网络互联到进程隔离等等，极大简化了容器的创建和维护，使容器技术更加轻便快捷。
+
+使用docker的目的：
+    更高效的利用资源
+    更快速的启动时间
+    一致的运行环境
+    持续交付和部署
+    更轻松地迁移
+    更轻松地维护
+
+docker 相关命令
+    docker 启动
+        docker run：    先从本地仓库找镜像 本地仓库没有会从远程仓库 pull 下来
+            pull下来的镜像 理解为一个tar包 解压后的文件目录作为进程的rootfs 启动这个进程
+            cmd 参数：
+                -it 交互
+                -d 后台运行
+                -p 端口映射
+                -v 磁盘挂载
+    查看容器细节：
+        docker inspect <containerid>
+    拷贝文件至容器内：
+        docker cp file1 <containerid>:/file-to-path
+
+docker优势在哪里：
+    将虚拟机镜像那种所有文件融合在一起的镜像，通过分层叠加这种形式，使得容器镜像更有条理，可以并行分发。
+    这样每次新增的层，不需要重新拉，缺哪一层叠哪一层。
+
+容器标准：
+    Runtime Specification  文件系统包如何解压到磁盘，供运行时运行（namespace和cgroup）
+    Image Specification 如何通过构建系统打包，生成镜像清单（Manifest）、文件系统序列化文件、镜像配置。
+
+容器主要特性：
+    安全性
+    隔离性
+    便携性
+    可配额
+
+Namespace:
+    Namespace是一种linux kernel提供的资源隔离方案
+    系统可以为进程分配不同的Namespace
+    不同的Namespace资源独立分配、进程彼此隔离
+
+        在linux下，无论进程还是线程，都是一个task
+
+
+隔离性 - Linux Namespace
+    Pid namespace
+        • 不同用户的进程就是通过 Pid namespace 隔离开的，且不同 namespace 中可以有相同 Pid。 • 有了 Pid namespace, 每个 namespace 中的 Pid 能够相互隔离。
+    net namespace
+        • 网络隔离是通过 net namespace 实现的， 每个 net namespace 有独立的 network devices, IP addresses, IP routing tables, /proc/net 目录。
+        • Docker 默认采用 veth 的方式将 container 中的虚拟网卡同 host 上的一个 docker bridge: docker0 连接在一起。
+    ipc namespace
+        • Container 中进程交互还是采用 linux 常见的进程间交互方法 （interprocess communication – IPC）, 包括常见的信号量、消息队列和共享内存。
+        • container 的进程间交互实际上还是 host上 具有相同 Pid namespace 中的进程间交互，因此需要在 IPC资源申请时加入 namespace 信息 - 每个 IPC 资源有一个唯一的 32 位 ID。
+    mnt namespace
+        • mnt namespace 允许不同 namespace 的进程看到的文件结构不同，这样每个 namespace 中的进程所看到的文件目录就被隔离开了。
+    uts namespace
+        • UTS(“UNIX Time-sharing System”) namespace允许每个 container 拥有独立的 hostname 和domain name, 使其在网络上可以被视作一个独立的节点而非 Host 上的一个进程。
+    user namespace
+        • 每个 container 可以有不同的 user 和 group id, 也就是说可以在 container 内部用 container 内部的用户执行程序而非 Host 上的用户。
+
+
+关于 namespace 的常用操作
+    • 查看当前系统的 namespace：
+        lsns –t <type>
+    • 查看某进程的 namespace：
+        ls -la /proc/<pid>/ns/
+    • 进入某 namespace 运行命令：
+        nsenter -t <pid> -n ip addr
+
+
+
+Cgroups
+    • Cgroups （Control Groups）是 Linux 下用于对一个或一组进程进行资源控制和监控的机制；
+    • 可以对诸如 CPU 使用时间、内存、磁盘 I/O 等进程所需的资源进行限制；
+    • 不同资源的具体管理工作由相应的 Cgroup 子系统（Subsystem）来实现 ；
+    • 针对不同类型的资源限制，只要将限制策略在不同的的子系统上进行关联即可 ；
+    • Cgroups 在不同的系统资源管理子系统中以层级树（Hierarchy）的方式来组织管理：每个 Cgroup 都可以
+        包含其他的子 Cgroup，因此子 Cgroup 能使用的资源除了受本 Cgroup 配置的资源参数限制，还受到父
+        Cgroup 设置的资源限制 。

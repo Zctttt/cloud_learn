@@ -1,0 +1,29 @@
+安装
+    yum install git gitweb -y
+
+配置用户
+    useradd git
+    passwd git
+    mkdir /git-root/
+    cd /git-root
+
+初始化 [裸库] 裸库适合做远程仓库 没有工作区 提交记录和源码分离
+    git init --bare first.git
+
+修改所管理员与管理组
+    chown -R git:git first.git
+
+
+做秘钥
+server端
+    su - git
+    ssh-keygen -t rsa
+    cd .ssh
+    cp id_rsa.pub authorized_keys
+    logout
+
+client端
+    ssh-keygen
+    ssh-copy-id git@192.168.128.133
+    git clone git@192.168.128.133:/git-root/first.git
+    git config --global user.name "zhaocongtao"   客户端配置

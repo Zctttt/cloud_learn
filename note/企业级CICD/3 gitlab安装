@@ -1,0 +1,36 @@
+关闭防火墙
+    systemctl status firewalld
+    systemctl stop firewalld
+关闭selinux
+    getengorce
+    setenforce 0
+    vi /etc/sysconfig/selinux
+    SELINUX=disabled    #将这里的enforcing 改为 disabled
+    SELINUXTYPE=targeted
+
+#安装技术依赖
+    sudo yum install -y curl policycoreutils-python openssh-server openssh-client postfix
+
+添加官方源
+    curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash
+    yum install -y gitlab-ce
+修改gitlab配置文件
+    vim /etc/gitlab/gitlab.rb
+    修改
+    external_url
+    加载配置文件
+    gitlab-ctl reconfigure
+    开启gitlab
+    gitlab-ctl start
+第一次gitlab设置
+    [root@i ~]# gitlab-rails console production
+    Loading production environment (Rails 4.2.8)
+    irb(main):001:0> u=User.find(1)
+    => #<User id:1 @root>
+    irb(main):002:0> u.password='test123456'
+    => "test123456"
+    irb(main):003:0> u.save
+    Enqueued ActionMailer::DeliveryJob (Job ID: 1657620e-55fb-4786-a0d1-dec1fbc1421d) to Sidekiq(mailers) with arguments: "DeviseMailer", "password_change", "deliver_now", gid://gitlab/User/1
+    => true
+    irb(main):004:0> exit
+    [root@i ~]#

@@ -1,0 +1,51 @@
+server端：
+    yum install git
+    添加git用户 useradd git
+    切换 su- git
+    创建repo cd ~ && mkdir repo
+    创建第一个项目 mkdir app.git && cd add.git
+    git初始化 git init
+
+client端：
+    yum install git
+    拉去项目 git clone git@ip:/home/git/repo/app.git
+    创建文件 vi index.html
+    本地添加 git add .
+    本地提交  git commit -m "1"
+    配置用户  git config --global user.name "k8s"
+    配置email git config --global user.email "k8s.com"
+    本地提交  git commit -m "1"
+    推送远程 git push origin master
+    免密：
+        创建秘钥
+             ssh-keygen
+            Generating public/private rsa key pair.
+            Enter file in which to save the key (/root/.ssh/id_rsa):
+            Enter passphrase (empty for no passphrase):
+            Enter same passphrase again:
+            Your identification has been saved in /root/.ssh/id_rsa.
+            Your public key has been saved in /root/.ssh/id_rsa.pub.
+            The key fingerprint is:
+            SHA256:CQBThOkflnweNzrzawpf/iMPoVhPxWydO/YDyEal8vc root@k8s-master
+            The key's randomart image is:
+            +---[RSA 2048]----+
+            |  o*+       .    |
+            |  o. .   o + .   |
+            | . . .. . B o    |
+            |  . = o.oO . .   |
+            |   o +.+S.= *    |
+            |    .o=+ o o =   |
+            |    o .++     E  |
+            |     o o+..    . |
+            |      ooo=o.     |
+            +----[SHA256]-----+
+        获取公钥
+        cat ~/.ssh/id_rsa.pub
+        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnOKMSCzEYjxNrrnW/3JYbDdE+Hlko58vbnxwh8ZPB/dB9qjVxSuIgmt8FWr0d1K5s271HKxn3vqBzNBoNYv1OqFer1BvYxspYW6ND+UcOekNV/VHJx8+/iK08BC7MoXK1HN7M8VTzkqWFw0aOYOKVESie+FruCsCfCqQ51vpkmAXHP8fKc+ZJKpV8hNh8GkC7HsTU661eMu06DTRV8iY4Ri+DTKgvkkU6isYAAY4PzojQ9g8B4w+2kuAEhX2GS/raMCV3q3DYgsJjZQM6EdmdoJF7hpmCC8w2mWNweg91Awd7yJwrtpaJuJDnc3mQRKDo5yAwMchg1fnNfDLPp9WJ root@k8s-master
+
+        server端:
+            cd ~
+            mkdir .ssh
+            chmod 700 .ssh/
+            vi .ssh/authorized_keys
+            chmod 600 .ssh/authorized_keys

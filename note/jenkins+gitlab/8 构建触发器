@@ -1,0 +1,30 @@
+jenkins内置4中构建触发器
+    1 出发远程构建
+    2 其他工程构建后出发
+    3 定是构建
+    4 轮训SCM
+
+
+触发远程构建
+    需要身份令牌
+    JENKINS_URL/job/web_jenkinsfile/build?token=TOKEN_NAME
+
+前置工程
+    绑定的工程构建后，当前项目构建
+
+定时构建
+    设定定时规则  M H D M W
+
+轮训scm
+    设定扫描定时 M H D M W
+
+
+jenkins构建细节 Git Hook 代替轮训SCM
+    安装git hook插件
+    配置触发远程构建一样的url
+    在gitlab上网络开启webhook 项目配置路由 设置push时触发
+    jenkins 开启gitlab相关功能
+
+输入参数识别不同分支
+   general中 选择This project is parameterized 设置构建参数
+   jenkinsfile中指定位置替换 ${变量}
